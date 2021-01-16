@@ -1,0 +1,267 @@
+https://github.com/JohnEarnest/chip8Archive/blob/master/src/flightrunner/flightrunner.8o
+
+Instructions
+0200: 1319 - JMP 319; Jump to 319;;
+
+:setup 0211
+0211: 6C40 - LD VC, 0x40; Load 0x40 (64) into VC;;
+0213: 6B03 - LD VB, 0x03; Load 0x03 (3) into VB;;
+0215: 6A1C - LD VA, 0x1C; Load 0x1C (28) into VA;;
+0217: 89B0 - LD V9, VB; V9=04;;
+0219: 88A0 - LD V8, VA; V8=1B;;
+021B: 6E04 - LD VE, 0x04; Load 0x04 (4) into VE;;
+021D: 6D0E - LD VD, 0x0E; Load 0x0E (14) into VD;;
+021F: 6000 - LD V0, 0x00; Load 0x00 (0) into V0;;
+0221: 81B0 - LD V1, VB; V1=04;;
+0223: 82A0 - LD V2, VA; V2=1B;;
+0225: A206 - LD I, 206; I = 206;;
+0227: D011 - DRW V0, V1; Draw 1 bytes at X = 33, Y = 14;;
+0229: D021 - DRW V0, V2; Draw 1 bytes at X = 33, Y = 5;;
+022B: 7008 - ADD V0, 0x08 (8); V0 = 0x21 + 0x08 = 29 (41)
+022D: 3040 - SE V0, 40; Skip if 21 == 40 => False;;
+022F: 1227 - JMP 227; Jump to 227;;
+0231: A203 - LD I, 203; I = 203;;
+0233: DED3 - DRW VE, VD; Draw 3 bytes at X = 0, Y = 14;;
+0235: 00EE - RET; Return from subroutine to 299;;
+
+: update-player
+0237: 83E0 - LD V3, VE; V3=00;;
+0239: 84D0 - LD V4, VD; V4=0E;;
+023B: 6201 - LD V2, 0x01; Load 0x01 (1) into V2;;
+023D: 6100 - LD V1, 0x00; Load 0x00 (0) into V1;;
+023F: 6005 - LD V0, 0x05; Load 0x05 (5) into V0;;
+0241: E0A1 - SKNP V0; Skip if key 21 not pressed;;
+--
+0245: 6008 - LD V0, 0x08; Load 0x08 (8) into V0;;
+0247: E0A1 - SKNP V0; Skip if key 21 not pressed;;
+--
+024B: 6007 - LD V0, 0x07; Load 0x07 (7) into V0;;
+024D: E0A1 - SKNP V0; Skip if key 21 not pressed;;
+--
+0251: 6009 - LD V0, 0x09; Load 0x09 (9) into V0;;
+0253: E0A1 - SKNP V0; Skip if key 21 not pressed;;
+--
+0257: 44FF - SNE V4, FF; Skip if 0E != FF => True;;
+--
+025B: 441E - SNE V4, 1E; Skip if 0E != 1E => True;;
+--
+025F: 43FF - SNE V3, FF; Skip if 04 != FF => True;;
+--
+0263: 433A - SNE V3, 3A; Skip if 04 != 3A => True;;
+--
+0267: 53E0 - SE V3, VE; Skip if 04 == 00 => False;;
+--
+026B: 54D0 - SE V4, VD; Skip if 0E == 0E => True;;
+--
+026F: 5120 - SE V1, V2; Skip if 0E == 05 => False;;
+0271: 00EE - RET; Return from subroutine to 299;;
+-- update ship missing
+
+: update-walls
+027F: A202 - LD I, 202; I = 202;;
+0281: 6004 - LD V0, 0x04; Load 0x04 (4) into V0;;
+0283: 6100 - LD V1, 0x00; Load 0x00 (0) into V1;;
+0285: 8C05 - SUB VC, V0; VC = 3C - 21 = 1B;;
+0287: DCB1 - DRW VC, VB; Draw 1 bytes at X = 60, Y = 4;;
+0289: 81F4 - ADD V1, VF; V1 = 0E + 01 = 0F;;
+028B: DCA1 - DRW VC, VA; Draw 1 bytes at X = 60, Y = 27;;
+028D: 81F4 - ADD V1, VF; V1 = 0E + 01 = 0F;;
+028F: DC91 - DRW VC, V9; Draw 1 bytes at X = 60, Y = 3;;
+0291: 81F4 - ADD V1, VF; V1 = 0E + 01 = 0F;;
+0293: DC81 - DRW VC, V8; Draw 1 bytes at X = 60, Y = 27;;
+0295: 81F4 - ADD V1, VF; V1 = 0E + 01 = 0F;;
+0297: 4103 - SNE V1, 03; Skip if 0E != 03 => True;;
+ 0299: 22DF - CALL 2DF; Call Subroutine at 02DF;; call :oops?
+029B: 4C00 - SNE VC, 00; Skip if 3C != 00 => True;;
+029D: 6C40 - LD VC, 0x40; Load 0x40 (64) into VC;;
+029F: 3C40 - SE VC, 40; Skip if 3C == 40 => False;;
+02A1: 00EE - RET; Return from subroutine to 299;;
+
+02A3: C003 - RND V0, 03; V0 = RND & 0x03;;
+02A5: 6101 - LD V1, 0x01; Load 0x01 (1) into V1;;
+02A7: 89B0 - LD V9, VB; V9=04;;
+02A9: 88A0 - LD V8, VA; V8=1B;;
+02AB: 4000 - SNE V0, 00; Skip if 21 != 00 => True;;
+02AF: 4001 - SNE V0, 01; Skip if 21 != 01 => True;;
+02B1: 8A15 - SUB VA, V1; VA = 1B - 0E = 0D;;
+02B3: 4002 - SNE V0, 02; Skip if 21 != 02 => True;;
+02B5: 8B14 - ADD VB, V1; VB = 04 + 0E = 12;;
+02B7: 4003 - SNE V0, 03; Skip if 21 != 03 => True;;
+02BB: 82A0 - LD V2, VA; V2=1B;;
+02BD: 82B5 - SUB V2, VB; V2 = 05 - 04 = 01;;
+02BF: 3205 - SE V2, 05; Skip if 05 == 05 => True;;
+02C1: 00EE - RET; Return from subroutine to 299;;
+
+: oops ?
+02DF: A207 - LD I, 207; I = 207;;
+02E1: 6005 - LD V0, 0x05; Load 0x05 (5) into V0;;
+02E3: 610E - LD V1, 0x0E; Load 0x0E (14) into V1;;
+02E5: 6E1E - LD VE, 0x1E; Load 0x1E (30) into VE;;
+02E7: 8EE5 - SUB VE, VE; VE = 00 - 00 = 00;;
+02E9: 4F01 - SNE VF, 01; Skip if 01 != 01 => False;;
+02ED: D015 - DRW V0, V1; Draw 5 bytes at X = 33, Y = 14;;
+02EF: 6205 - LD V2, 0x05; Load 0x05 (5) into V2;;
+02F1: F21E - ADD I, V2; I = 0x20C + 0x05 = 211;;
+02F3: 7008 - ADD V0, 0x08 (8); V0 = 0x21 + 0x08 = 29 (41)
+02F5: D015 - DRW V0, V1; Draw 5 bytes at X = 33, Y = 14;;
+02F7: 608C - LD V0, 0x8C; Load 0x8C (140) into V0;;
+02F9: F015 - LD DT, V0; DT = 0x21 (33);;
+02FB: F007 - LD V0, DT; V0 = 20;;
+02FD: 3000 - SE V0, 00; Skip if 21 == 00 => False;;
+02FF: 12FB - JMP 2FB; Jump to 2FB;;
+0307: 4F01 - SNE VF, 01; Skip if 01 != 01 => False;;
+030B: 00EE - RET; Return from subroutine to 299;;
+
+030D: F007 - LD V0, DT; V0 = 20;;
+030F: 3000 - SE V0, 00; Skip if 21 == 00 => False;;
+0311: 130D - JMP 30D; Jump to 30D;;
+0313: 6002 - LD V0, 0x02; Load 0x02 (2) into V0;;
+0315: F015 - LD DT, V0; DT = 0x21 (33);;
+0317: 00EE - RET; Return from subroutine to 299;;
+
+0319: 2211 - CALL 211; Call Subroutine at 0211;;
+031B: 2237 - CALL 237; Call Subroutine at 0237;;
+031D: 2307 - CALL 307; Call Subroutine at 0307;;
+031F: 230D - CALL 30D; Call Subroutine at 030D;;
+0321: 227F - CALL 27F; Call Subroutine at 027F;; // : update-walls
+0323: 6F00 - LD VF, 0x00; Load 0x00 (0) into VF;;
+0325: 131B - JMP 31B; Jump to 31B;;
+
+
+
+
+
+
+####################### Instructions
+0200: 1319 - goto 0319
+
+: setup
+0211: 6C40 - VC := 64
+0213: 6B03 - VB := 3
+0215: 6A1C - VA := 28
+0217: 89B0 - V9 := VB
+0219: 88A0 - V8 := VA
+021B: 6E04 - VE := 4
+021D: 6D0E - VD := 14
+021F: 6000 - V0 := 0
+0221: 81B0 - V1 := VB
+0223: 82A0 - V2 := VA
+0225: A206 - i := 518
+0227: D011 - sprite V0 V1 1
+0229: D021 - sprite V0 V2 1
+022B: 7008 - V0 += 8
+022D: 3040 - if V0 != 40 then
+022F: 1227 -    goto 0227
+0231: A203 - i := 515
+0233: DED3 - sprite VE VD 3
+0235: 00EE - return
+
+: update-player
+0237: 83E0 - V3 := VE
+0239: 84D0 - V4 := VD
+023B: 6201 - V2 := 1
+023D: 6100 - V1 := 0
+023F: 6005 - V0 := 5
+0241: E0A1 - if V0 key then
+..
+0245: 6008 - V0 := 8
+0247: E0A1 - if V0 key then
+..
+024B: 6007 - V0 := 7
+024D: E0A1 - if V0 key then
+..
+0251: 6009 - V0 := 9
+0253: E0A1 - if V0 key then
+..
+0257: 44FF - if V4 == 255 then
+..
+025B: 441E - if V4 == 30 then
+..
+025F: 43FF - if V3 == 255 then
+..
+0263: 433A - if V3 == 58 then
+..
+0267: 53E0 - if V3 != VE then
+..
+026B: 54D0 - if V4 != VD then
+..
+026F: 5120 - if V1 != V2 then
+0271: 00EE - return
+
+027F: A202 - i := 514
+0281: 6004 - V0 := 4
+0283: 6100 - V1 := 0
+0285: 8C05 - VC -= V0
+0287: DCB1 - sprite VC VB 1
+0289: 81F4 - V1 += VF
+028B: DCA1 - sprite VC VA 1
+028D: 81F4 - V1 += VF
+028F: DC91 - sprite VC V9 1
+0291: 81F4 - V1 += VF
+0293: DC81 - sprite VC V8 1
+0295: 81F4 - V1 += VF
+0297: 4103 - if V1 == 3 then
+0299: 22DF -    call 02DF
+029B: 4C00 - if VC == 0 then
+029D: 6C40 -    VC := 64
+029F: 3C40 - if VC != 40 then
+02A1: 00EE -    return
+02A3: C003 - V0 := RND & 03;;
+02A5: 6101 - V1 := 1
+02A7: 89B0 - V9 := VB
+02A9: 88A0 - V8 := VA
+02AB: 4000 - if V0 == 0 then
+02AD: 8B14 -    VB += V1
+02AF: 4001 - if V0 == 1 then
+..
+02B3: 4002 - if V0 == 2 then
+..
+02B7: 4003 - if V0 == 3 then
+..
+02BB: 82A0 - V2 := VA
+02BD: 82B5 - V2 -= VB
+02BF: 3205 - if V2 != 05 then
+02C1: 00EE - ;
+
+             : game-over
+02DF: A207 - i := 519
+02E1: 6005 - V0 := 5
+02E3: 610E - V1 := 14
+02E5: 6E1E - VE := 30
+02E7: 8EE5 - VE -= VE
+02E9: 4F01 - if VF == 1 then
+..
+02ED: D015 - sprite V0 V1 5
+02EF: 6205 - V2 := 5
+02F1: F21E - i += V2
+02F3: 7008 - V0 += 8
+02F5: D015 - sprite V0 V1 5
+02F7: 608C - V0 := 140
+02F9: F015 - delay := V0
+02FB: F007 - V0 := delay
+02FD: 3000 - if V0 != 00 then
+02FF: 12FB -    goto 02FB
+0301: 00E0 - clear
+0303: 2319 - call 0319 : main
+
+: check-collision
+0307: 4F01 - if VF == 1 then
+0309: 22DF -    goto 02DF : game-over
+030B: 00EE - return
+
+: sync
+030D: F007 - V0 := delay
+030F: 3000 - if V0 != 00 then
+0311: 130D -    goto 030D
+0313: 6002 - V0 := 2
+0315: F015 - delay := V0
+0317: 00EE - return
+
+: main
+0319: 2211 - goto 0211 : setup
+031B: 2237 - goto 0237 : update-player
+031D: 2307 - goto 0307 : check-collision
+031F: 230D - goto 030D : sync
+0321: 227F - goto 027F : update-walls
+0323: 6F00 - VF := 0
+0325: 131B - goto 031B
