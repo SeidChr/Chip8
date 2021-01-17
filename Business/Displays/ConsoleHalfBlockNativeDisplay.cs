@@ -8,8 +8,6 @@ namespace Chip8.Business.Displays
     {
         private readonly int width = Interpreter.DisplayWidth;
 
-        private readonly int height = Interpreter.DisplayHeight;
-        
         private readonly int halfHeight = Interpreter.DisplayHeight / 2;
 
         private readonly short offsetTop;
@@ -42,11 +40,6 @@ namespace Chip8.Business.Displays
             this.offsetLeft = (short)(offsetLeft + 2);
         }
 
-        private void Set(int y, int x, CharInfo character) 
-        {
-            this.consoleDisplay.Set(x, y, character);
-        }
-
         public void Draw(Interpreter interpreter)
         {
             bool top;
@@ -66,16 +59,18 @@ namespace Chip8.Business.Displays
                     srcLine = y * 2;
                     top = interpreter.Display[x, srcLine];
                     bottom = interpreter.Display[x, srcLine + 1];
+                    var character = top
+                        ? bottom
+                            ? this.chars[0]
+                            : this.chars[1]
+                        : bottom
+                            ? this.chars[2]
+                            : this.chars[3];
+
                     this.Set(
                         y + this.offsetTop,
                         x + this.offsetLeft,
-                        top
-                            ? bottom
-                                ? this.chars[0]
-                                : this.chars[1]
-                            : bottom
-                                ? this.chars[2]
-                                : this.chars[3]);
+                        character);
                 }
             }
             
@@ -85,6 +80,11 @@ namespace Chip8.Business.Displays
         public void Dispose()
         {
             this.consoleDisplay.Dispose();
+        }
+
+        private void Set(int y, int x, CharInfo character)
+        {
+            this.consoleDisplay.Set(x, y, character);
         }
     }
 }

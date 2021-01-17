@@ -1,4 +1,5 @@
-﻿[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1028:no trailing whitespace", Justification = "autoformatted away")]
+﻿[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA0001:no xml docs", Justification = "not required")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1028:no trailing whitespace", Justification = "autoformatted away")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:... should be documented", Justification = "maybe later in a stable state")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:... should be documented", Justification = "maybe later in a stable state")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1611:... should be documented", Justification = "maybe later in a stable state")]
@@ -28,11 +29,11 @@ namespace Chip8
         public static async Task Main(string[] args)
         {
             await InterpetAsync(args);
-            ////await KeyboardDemoAsync(args);
+            //// KeyboardDemo(args);
             //// await ConsoleDisplayDemoAsync(args);
         }
 
-        private static async Task KeyboardDemoAsync(string[] args)
+        private static void KeyboardDemo(string[] args)
         {
             do
             {
@@ -43,14 +44,13 @@ namespace Chip8
 
         private static async Task ConsoleDisplayDemoAsync(string[] args)
         {
-            using (var display = new ConsoleDisplay()) 
-            {
-                display.DrawFrame(0, 2, 4, 4);
-                display.DrawFrame(5, 2, 8, 4);
-                // display.DrawPixelFrame(14, 2, 8, 8);
-                display.Flush();
-                await Task.Delay(TimeSpan.FromSeconds(5));
-            }
+            using var display = new ConsoleDisplay();
+
+            display.DrawFrame(0, 2, 4, 4);
+            display.DrawFrame(5, 2, 8, 4);
+
+            display.Flush();
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         private static async Task InterpetAsync(string[] args) 
@@ -87,10 +87,10 @@ namespace Chip8
             interpreter.Load(programmData);
             interpreter.Start();
 
-            // NativeConsole.Write(
-            //     "123 GGG",
-            //     "456 A B C D",
-            //     "789 EFG");
+            //// NativeConsole.Write(
+            ////     "123 GGG",
+            ////     "456 A B C D",
+            ////     "789 EFG");
 
             displayDriver.Dispose();
         }

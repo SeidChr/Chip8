@@ -33,12 +33,12 @@ namespace Chip8.Business.Native
 
                 for (int x = 0; x < chars.Length; x++)
                 {
-                    buffer[y * width + x] = chars[x];
+                    buffer[(y * width) + x] = chars[x];
                 }
 
                 for (int x = chars.Length; x < width; x++)
                 {
-                    buffer[y * width + x] = blank;
+                    buffer[(y * width) + x] = blank;
                 }
             }
 
@@ -66,8 +66,7 @@ namespace Chip8.Business.Native
             [Out] CharInfo[] lpBuffer,
             Coordinate dwBufferSize,
             Coordinate dwBufferCoord,
-            ref Rectangle lpReadRegion
-        );
+            ref Rectangle lpReadRegion);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         internal static extern IntPtr GetStdHandle(Channel channel);

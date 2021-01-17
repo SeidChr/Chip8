@@ -1,20 +1,17 @@
-using System;
-using System.Runtime.InteropServices;
-using static Chip8.Business.Native.NativeConsole;
-
 namespace Chip8.Business.Displays
 {
+    using System;
+    using static Chip8.Business.Native.NativeConsole;
+
     public class ConsoleDisplay : IDisposable
     {
         private readonly int width;
 
         private readonly int height;
 
-        private readonly int pixelHeight;
-
         private readonly CharInfo[] buffer;
 
-        private readonly CharInfo Space = GetCharInfo(' ');
+        private readonly CharInfo space = GetCharInfo(' ');
 
         private readonly CharInfo[] originalDisplayContent;
 
@@ -22,7 +19,7 @@ namespace Chip8.Business.Displays
 
         private readonly Coordinate location;
 
-        private readonly bool originalIsCursorShown;
+        private readonly bool originalIsCursorShown = true;
 
         public ConsoleDisplay()
             : this(Console.WindowWidth, Console.WindowHeight)
@@ -34,9 +31,7 @@ namespace Chip8.Business.Displays
             this.width = width;
             this.height = height;
 
-            this.pixelHeight = height * 2;
-
-            buffer = new CharInfo[height * width];
+            this.buffer = new CharInfo[height * width];
 
             this.Clear();
 
@@ -55,13 +50,21 @@ namespace Chip8.Business.Displays
                 this.location,
                 ref region);
 
-            this.originalIsCursorShown = Console.CursorVisible;
+            if (OperatingSystem.IsWindows())
+            {
+                this.originalIsCursorShown = Console.CursorVisible;
+            }
+
             Console.CursorVisible = false;
             this.Flush();
         }
 
         public static CharInfo GetCharInfo(char character) 
-            => new CharInfo { UnicodeChar = character, Attributes = 0x0000 };
+            => new ()
+            { 
+                UnicodeChar = character,
+                Attributes = 0x0000,
+            };
 
         public void Set(int x, int y, char character)
             => this.Set(x, y, GetCharInfo(character));
@@ -73,7 +76,7 @@ namespace Chip8.Business.Displays
                 return;
             }
 
-            this.buffer[y * this.width + x] = character;
+            this.buffer[(y * this.width) + x] = character;
         }
 
         public void DrawFrame(int startX, int startY, int width, int height, bool half = true)
@@ -86,7 +89,7 @@ namespace Chip8.Business.Displays
             var topChar = half ? '▀' : sideChar;
             var bottomChar = half ? '▄' : sideChar;
 
-            for (int y = startY; y < endY ; y++)
+            for (int y = startY; y < endY; y++)
             {
                 this.Set(startX, y, sideChar);
                 this.Set(endX - 1, y, sideChar);
@@ -99,40 +102,40 @@ namespace Chip8.Business.Displays
             }
         }
 
-        // public void DrawPixelFrame(int startX, int startY, int width, int height)
-        // {
-        //     // A        B        C
-        //     // 0,0,5,4  0,1,5,3  0,1,5,4
-        //     // █▀▀▀█    ▄▄▄▄▄    ▄▄▄▄▄
-        //     // █▄▄▄█    █▄▄▄█    █   █
-        //     //                   ▀▀▀▀▀
-        //     //
-        //     // "█▀▄ ▛▜▙▟"
+        //// public void DrawPixelFrame(int startX, int startY, int width, int height)
+        //// {
+        ////     // A        B        C
+        ////     // 0,0,5,4  0,1,5,3  0,1,5,4
+        ////     // █▀▀▀█    ▄▄▄▄▄    ▄▄▄▄▄
+        ////     // █▄▄▄█    █▄▄▄█    █   █
+        ////     //                   ▀▀▀▀▀
+        ////     //
+        ////     // "█▀▄ ▛▜▙▟"
 
-        //     var startLow = startY % 2 > 0;
-        //     var endHigh = startY + height % 2 > 0;
+        ////     var startLow = startY % 2 > 0;
+        ////     var endHigh = startY + height % 2 > 0;
 
-        //     var endX = startX + width;
-        //     var endY = startY + height;
+        ////     var endX = startX + width;
+        ////     var endY = startY + height;
 
-        //     for (int y = startY; y < endY; y++)
-        //     {
-        //         this.Set(startX, y, '█');
-        //         this.Set(endX - 1, y, '█');
-        //     }
+        ////     for (int y = startY; y < endY; y++)
+        ////     {
+        ////         this.Set(startX, y, '█');
+        ////         this.Set(endX - 1, y, '█');
+        ////     }
 
-        //     for (int x = startX + 1; x < endX - 1; x++)
-        //     {
-        //         this.Set(x, startY, '▀');
-        //         this.Set(x, endY - 1, '▄');
-        //     }
-        // }
+        ////     for (int x = startX + 1; x < endX - 1; x++)
+        ////     {
+        ////         this.Set(x, startY, '▀');
+        ////         this.Set(x, endY - 1, '▄');
+        ////     }
+        //// }
 
         public void Flush()
             => this.FlushBuffer(this.buffer);
 
         public void Clear()
-            => Array.Fill(buffer, this.Space);
+            => Array.Fill(this.buffer, this.space);
 
         public void Dispose()
         {
@@ -148,13 +151,13 @@ namespace Chip8.Business.Displays
             Native.NativeConsole.WriteConsoleOutput(
                 handle,
                 buffer,
-                size,
-                location,
+                this.size,
+                this.location,
                 ref region);
         }
 
         private Rectangle GetRegion() 
-            => new Rectangle
+            => new ()
             {
                 Top = 0,
                 Left = 0,
