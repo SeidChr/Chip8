@@ -1,4 +1,4 @@
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA0001:no xml docs", Justification = "not required")]
+﻿[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA0001:no xml docs", Justification = "not required")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1028:no trailing whitespace", Justification = "autoformatted away")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:... should be documented", Justification = "maybe later in a stable state")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:... should be documented", Justification = "maybe later in a stable state")]
@@ -58,7 +58,8 @@ namespace Chip8
 
         private static async Task InterpetAsync(string[] args) 
         {
-            var programmData = await File.ReadAllBytesAsync("Assets/flightrunner.ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/flightrunner.ch8");
+            var programmData = await File.ReadAllBytesAsync("Assets/Space Invaders [David Winter].ch8");
             //// var programmData = await File.ReadAllBytesAsync("danm8ku.ch8");
 
             var logger = LoggerFactory
