@@ -8,8 +8,8 @@ namespace Chip8.Business.Displays
 
     public class ConsoleHalfBlockNativeDisplay : IDisplayDriver
     {
-        private readonly CharInfo[,] buffer
-            = new CharInfo[Interpreter.DisplayHeight + 2, Interpreter.DisplayWidth + 2];
+        private readonly CharInfo[] buffer
+            = new CharInfo[Interpreter.DisplayHeight + 2 * Interpreter.DisplayWidth + 2];
 
         private readonly Coordinate bufferSize = new ()
         {
@@ -44,20 +44,25 @@ namespace Chip8.Business.Displays
 
             for (int y = 1; y < this.halfHeight + 1; y++)
             {
-                this.buffer[y, 0] = this.chars[8];
-                this.buffer[y, Interpreter.DisplayWidth + 1] = this.chars[9];
+                this.Set(y, 0, this.chars[8]);
+                this.Set(y, Interpreter.DisplayWidth + 1, this.chars[9]);
             }
 
             for (int x = 1; x < Interpreter.DisplayWidth + 1; x++)
             {
-                this.buffer[0, x] = this.chars[1];
-                this.buffer[this.halfHeight + 1, x] = this.chars[2];
+                this.Set(0, x, this.chars[1]);
+                this.Set(this.halfHeight + 1, x, this.chars[2]);
             }
 
-            this.buffer[0, 0] = this.chars[4];
-            this.buffer[this.halfHeight + 1, 0] = this.chars[6];
-            this.buffer[0, Interpreter.DisplayWidth + 1] = this.chars[5];
-            this.buffer[this.halfHeight + 1, Interpreter.DisplayWidth + 1] = this.chars[7];
+            this.Set(0, 0, this.chars[4]);
+            this.Set(this.halfHeight + 1, 0, this.chars[6]);
+            this.Set(0, Interpreter.DisplayWidth + 1, this.chars[5]);
+            this.Set(this.halfHeight + 1, Interpreter.DisplayWidth + 1, this.chars[7]);
+        }
+
+        private void Set(int y, int x, CharInfo character) 
+        {
+            this.buffer[Interpreter.DisplayWidth * y + x] = character;
         }
 
         public void Draw(Interpreter interpreter)
@@ -89,13 +94,13 @@ namespace Chip8.Business.Displays
                     srcLine = y * 2;
                     top = interpreter.Display[x, srcLine];
                     bottom = interpreter.Display[x, srcLine + 1];
-                    this.buffer[y + 1, x + 1] = top
+                    this.Set(y + 1, x + 1, top
                         ? bottom
                             ? this.chars[0]
                             : this.chars[1]
                         : bottom
                             ? this.chars[2]
-                            : this.chars[3];
+                            : this.chars[3]);
                 }
             }
 
@@ -103,7 +108,7 @@ namespace Chip8.Business.Displays
             // {
             //     for (x = 0; x < Interpreter.DisplayWidth; x++)
             //     {
-            //         this.buffer[y, x] = interpreter.Display[x, y]
+            //         this.Set(y, x] = interpreter.Display[x, y]
             //             ? chars[0]
             //             : chars[1];
             //     }

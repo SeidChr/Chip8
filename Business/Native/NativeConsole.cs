@@ -21,7 +21,7 @@ namespace Chip8.Business.Native
             short width = (short)texts.Select(t => t.Length).Max();
             short height = (short)texts.Length;
 
-            var buffer = new CharInfo[height, width];
+            var buffer = new CharInfo[height * width];
             var targetRegion = new Rectangle { Top = 0, Left = 0, Bottom = height, Right = width };
             var blank = new CharInfo { UnicodeChar = ' ', Attributes = 0x0000 };
 
@@ -33,12 +33,12 @@ namespace Chip8.Business.Native
 
                 for (int x = 0; x < chars.Length; x++)
                 {
-                    buffer[y, x] = chars[x];
+                    buffer[y * width + x] = chars[x];
                 }
 
                 for (int x = chars.Length; x < width; x++)
                 {
-                    buffer[y, x] = blank;
+                    buffer[y * width + x] = blank;
                 }
             }
 
@@ -54,10 +54,20 @@ namespace Chip8.Business.Native
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern bool WriteConsoleOutput(
             IntPtr consoleOutput,
-            CharInfo[,] buffer,
+            CharInfo[] buffer,
             Coordinate bufferSize,
             Coordinate bufferCoord,
             ref Rectangle targetRegion);
+
+        // http://pinvoke.net/default.aspx/kernel32/ReadConsoleOutput.html
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        internal static extern bool ReadConsoleOutput(
+            IntPtr hConsoleOutput,
+            [Out] CharInfo[] lpBuffer,
+            Coordinate dwBufferSize,
+            Coordinate dwBufferCoord,
+            ref Rectangle lpReadRegion
+        );
 
         [DllImport("kernel32.dll", SetLastError = true)]
         internal static extern IntPtr GetStdHandle(Channel channel);
