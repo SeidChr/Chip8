@@ -21,6 +21,7 @@ namespace Chip8.Business.Instructions
             // it wraps around to the opposite side of the screen.See instruction 8xy3 for more information
             // on XOR, and section 2.4, Display, for more information on the Chip - 8 screen and sprites.
 
+            bool collision = false;
             // iterate all lines
             for (int seekY = 0; seekY < n; seekY++) 
             {
@@ -41,7 +42,7 @@ namespace Chip8.Business.Instructions
                         var value = i.Display[displayX, displayY];
                         if (value) 
                         {
-                            i.V[0xF] = 1;
+                            collision = true;
                         }
 
                         i.Display[displayX, displayY] = !value;
@@ -51,7 +52,8 @@ namespace Chip8.Business.Instructions
 
             i.Draw();
 
-            if (i.V[0xF] == 1) 
+            i.V[0xF] = collision ? 1 : 0;
+            if (collision) 
             {
                 // Console.ReadKey(true);
             }
