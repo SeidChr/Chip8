@@ -1,4 +1,4 @@
-﻿[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA0001:no xml docs", Justification = "not required")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA0001:no xml docs", Justification = "not required")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1028:no trailing whitespace", Justification = "autoformatted away")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:... should be documented", Justification = "maybe later in a stable state")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:... should be documented", Justification = "maybe later in a stable state")]
@@ -8,6 +8,7 @@
 namespace Chip8
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -16,21 +17,23 @@ namespace Chip8
     using Chip8.Business.Native;
     using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Main Programm Class.
-    /// </summary>
     public class Program
     {
-        /// <summary>
-        /// Main Programm Entry Point.
-        /// </summary>
-        /// <param name="args">Commandline Arguments.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Main(string[] args)
         {
+            // Attach();
             await InterpetAsync(args);
             //// KeyboardDemo(args);
             //// await ConsoleDisplayDemoAsync(args);
+        }
+
+        private static void Attach() 
+        {
+            while (!Debugger.IsAttached) 
+            {
+            }
+
+            Debugger.Break();
         }
 
         private static void KeyboardDemo(string[] args)
