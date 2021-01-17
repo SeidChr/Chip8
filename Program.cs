@@ -27,9 +27,9 @@ namespace Chip8
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Main(string[] args)
         {
-            // // await InterpetAsync(args);
+            await InterpetAsync(args);
             ////await KeyboardDemoAsync(args);
-            await ConsoleDisplayDemoAsync(args);
+            //// await ConsoleDisplayDemoAsync(args);
         }
 
         private static async Task KeyboardDemoAsync(string[] args)
@@ -43,11 +43,14 @@ namespace Chip8
 
         private static async Task ConsoleDisplayDemoAsync(string[] args)
         {
-            var display = new ConsoleDisplay();
-            display.DrawCharFrame(0, 2, 4, 4);
-            display.DrawCharFrame(5, 2, 8, 4);
-            display.DrawPixelFrame(14, 2, 8, 8);
-            display.Flush();
+            using (var display = new ConsoleDisplay()) 
+            {
+                display.DrawFrame(0, 2, 4, 4);
+                display.DrawFrame(5, 2, 8, 4);
+                // display.DrawPixelFrame(14, 2, 8, 8);
+                display.Flush();
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
         }
 
         private static async Task InterpetAsync(string[] args) 
@@ -61,8 +64,9 @@ namespace Chip8
                     outputTemplate: "{Message}{NewLine}"))
                 .CreateLogger<Interpreter>();
 
+            var displayDriver = new ConsoleHalfBlockNativeDisplay(3, 0);
             var interpreter = new Interpreter(
-                new ConsoleHalfBlockNativeDisplay(3, 3),
+                displayDriver,
                 singleSteps: false,
                 logger: logger);
             //// var interpreter = new Interpreter(new ConsoleHalfBlockDisplay());
@@ -87,6 +91,8 @@ namespace Chip8
             //     "123 GGG",
             //     "456 A B C D",
             //     "789 EFG");
+
+            displayDriver.Dispose();
         }
     }
 }
