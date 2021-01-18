@@ -3,9 +3,10 @@ namespace Chip8.Business
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Microsoft.Extensions.Logging;
 
-    public class Interpreter
+    public class Interpreter : IDisposable
     {
         public const int MemorySize = 0x1000;
 
@@ -27,6 +28,8 @@ namespace Chip8.Business
 
         private readonly ILogger<Interpreter> logger;
 
+        private readonly Timer clock;
+
         private int loadedProgrammSize = 0;
 
         private bool active = true;
@@ -36,6 +39,13 @@ namespace Chip8.Business
             this.displayDriver = displayDriver;
             this.singleSteps = singleSteps;
             this.logger = logger;
+
+            this.clock = new Timer((state) => ((Interpreter)state).UpdateTimers(), this, 17, 17);
+        }
+
+        ~Interpreter() 
+        {
+            this.Dispose();
         }
 
         public byte[] Memory { get; } = new byte[0x1000];
@@ -88,7 +98,6 @@ namespace Chip8.Business
 
         public bool Step(int words = 1)
         {
-            this.UpdateTimers();
             this.ProgrammCounter += 2 * words;
             return this.ProgrammCounter < (ProgrammOffset + this.loadedProgrammSize);
         }
@@ -105,8 +114,8 @@ namespace Chip8.Business
                 ////Console.ReadLine();
 
                 var instructionText = instruction.ToHumanString(this, this.ProgrammCounter);
-                this.logger?.LogInformation(instructionText);
-                Native.NativeConsole.Write(this.Status, instructionText);
+                //// this.logger?.LogInformation(instructionText);
+                //// Native.NativeConsole.Write(this.Status, instructionText);
                 if (this.singleSteps)
                 {
                     Console.ReadKey(true);
@@ -138,19 +147,20 @@ namespace Chip8.Business
             this.active = false;
         }
 
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            this.clock.Dispose();
+        }
+
         private void UpdateTimers()
         {
-            var currectTicks = DateTime.Now.Ticks;
-            var diff = this.LastTimerUpdate - currectTicks;
-            //// Native.NativeConsole.Write("","",$"   diff={diff} expectedDiff={Diff60Hz}   ");
-            var updateTimers = (currectTicks - this.LastTimerUpdate) > Diff60Hz;
-            this.LastTimerUpdate = currectTicks;
-            if (updateTimers && this.DelayTimer > 0)
+            if (this.DelayTimer > 0)
             {
                 this.DelayTimer--;
             }
 
-            if (updateTimers && this.SoundTimer > 0)
+            if (this.SoundTimer > 0)
             {
                 this.SoundTimer--;
             }
@@ -167,5 +177,6 @@ namespace Chip8.Business
                 Array.Copy(chars[i], 0, this.Memory, i * size, size);
             }
         }
+
     }
 }

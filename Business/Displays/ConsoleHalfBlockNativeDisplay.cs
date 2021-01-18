@@ -34,7 +34,7 @@ namespace Chip8.Business.Displays
                 this.width + 4,
                 this.halfHeight + 2);
 
-            this.consoleDisplay.Flush();
+            // this.consoleDisplay.Flush();
 
             this.offsetTop = (short)(offsetTop + 1);
             this.offsetLeft = (short)(offsetLeft + 2);
@@ -74,7 +74,7 @@ namespace Chip8.Business.Displays
                 }
             }
             
-            this.consoleDisplay.Flush();
+            // this.consoleDisplay.Flush();
         }
 
         public void Dispose()

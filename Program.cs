@@ -52,7 +52,7 @@ namespace Chip8
             display.DrawFrame(0, 2, 4, 4);
             display.DrawFrame(5, 2, 8, 4);
 
-            display.Flush();
+            // display.Flush();
             await Task.Delay(TimeSpan.FromSeconds(5));
         }
 

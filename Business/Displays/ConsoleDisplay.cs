@@ -1,6 +1,7 @@
 namespace Chip8.Business.Displays
 {
     using System;
+    using System.Threading;
     using static Chip8.Business.Native.NativeConsole;
 
     public class ConsoleDisplay : IDisposable
@@ -20,6 +21,10 @@ namespace Chip8.Business.Displays
         private readonly Coordinate location;
 
         private readonly bool originalIsCursorShown = true;
+
+        private readonly Timer flushTimer;
+
+        private bool hasChanges = false;
 
         public ConsoleDisplay()
             : this(Console.WindowWidth, Console.WindowHeight)
@@ -57,6 +62,14 @@ namespace Chip8.Business.Displays
 
             Console.CursorVisible = false;
             this.Flush();
+
+            // every 40 ms == 25 frames / second
+            this.flushTimer = new Timer((state) => this.Flush(), this, 40, 40);
+        }
+
+        ~ConsoleDisplay()
+        {
+            this.Dispose();
         }
 
         public static CharInfo GetCharInfo(char character) 
@@ -76,6 +89,7 @@ namespace Chip8.Business.Displays
                 return;
             }
 
+            this.hasChanges = true;
             this.buffer[(y * this.width) + x] = character;
         }
 
@@ -131,16 +145,29 @@ namespace Chip8.Business.Displays
         ////     }
         //// }
 
-        public void Flush()
-            => this.FlushBuffer(this.buffer);
-
         public void Clear()
-            => Array.Fill(this.buffer, this.space);
+        {
+            Array.Fill(this.buffer, this.space);
+            this.hasChanges = true;
+        }
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
+
+            this.flushTimer.Dispose();
+
             this.FlushBuffer(this.originalDisplayContent);
             Console.CursorVisible = this.originalIsCursorShown;
+        }
+
+        private void Flush()
+        {
+            if (this.hasChanges)
+            {
+                this.FlushBuffer(this.buffer);
+                this.hasChanges = false;
+            }
         }
 
         private void FlushBuffer(CharInfo[] buffer)
@@ -148,7 +175,7 @@ namespace Chip8.Business.Displays
             var handle = GetStdHandle(Channel.StdOutput);
             var region = this.GetRegion();
 
-            Native.NativeConsole.WriteConsoleOutput(
+            WriteConsoleOutput(
                 handle,
                 buffer,
                 this.size,
