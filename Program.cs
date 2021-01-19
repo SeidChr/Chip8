@@ -37,8 +37,6 @@ namespace Chip8
             while (!Debugger.IsAttached) 
             {
             }
-
-            // Debugger.Break();
         }
 
         private static void KeyboardDemo(string[] args)
@@ -61,11 +59,21 @@ namespace Chip8
             await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
+        private static async Task NativeConsoleTest()
+        {
+            NativeConsole.Write(
+                "123 GGG",
+                "456 A B C D",
+                "789 EFG");
+        }
+
         private static async Task InterpetAsync(string[] args) 
         {
-            var programmData = await File.ReadAllBytesAsync("Assets/flightrunner.ch8");
-            // var programmData = await File.ReadAllBytesAsync("Assets/Space Invaders [David Winter].ch8");
-            // var programmData = await File.ReadAllBytesAsync("Assets/danm8ku.ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/Games/flightrunner.ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/Games/Space Invaders [David Winter].ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/Games/danm8ku.ch8");
+            var programmData = await File.ReadAllBytesAsync("Assets/Games/TETRIS.ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/Games/BLITZ.ch8");
 
             var logger = LoggerFactory
                 .Create(logging => logging.AddFile(
@@ -78,8 +86,6 @@ namespace Chip8
                 displayDriver,
                 singleSteps: false,
                 logger: logger);
-            //// var interpreter = new Interpreter(new ConsoleHalfBlockDisplay());
-            //// var interpreter = new Interpreter(new ConsoleSetPositionDisplay());
 
             Console.CancelKeyPress += new ConsoleCancelEventHandler((sender, args) =>
             {
@@ -95,11 +101,6 @@ namespace Chip8
 
             interpreter.Load(programmData);
             interpreter.Start();
-
-            //// NativeConsole.Write(
-            ////     "123 GGG",
-            ////     "456 A B C D",
-            ////     "789 EFG");
 
             displayDriver.Dispose();
         }
