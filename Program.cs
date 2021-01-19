@@ -21,7 +21,11 @@ namespace Chip8
     {
         public static async Task Main(string[] args)
         {
-            // Attach();
+            if (args.Length > 0 && args[0] == "debug") 
+            {
+                Attach();
+            }
+
             await InterpetAsync(args);
             //// KeyboardDemo(args);
             //// await ConsoleDisplayDemoAsync(args);
@@ -29,11 +33,12 @@ namespace Chip8
 
         private static void Attach() 
         {
+            Console.WriteLine("Please attach debugger to " + AppDomain.CurrentDomain.FriendlyName);
             while (!Debugger.IsAttached) 
             {
             }
 
-            Debugger.Break();
+            // Debugger.Break();
         }
 
         private static void KeyboardDemo(string[] args)
@@ -58,9 +63,9 @@ namespace Chip8
 
         private static async Task InterpetAsync(string[] args) 
         {
-            // var programmData = await File.ReadAllBytesAsync("Assets/flightrunner.ch8");
-            var programmData = await File.ReadAllBytesAsync("Assets/Space Invaders [David Winter].ch8");
-            //// var programmData = await File.ReadAllBytesAsync("danm8ku.ch8");
+            var programmData = await File.ReadAllBytesAsync("Assets/flightrunner.ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/Space Invaders [David Winter].ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/danm8ku.ch8");
 
             var logger = LoggerFactory
                 .Create(logging => logging.AddFile(

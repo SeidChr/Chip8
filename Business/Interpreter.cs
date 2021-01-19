@@ -2,8 +2,10 @@ namespace Chip8.Business
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
     public class Interpreter : IDisposable
@@ -20,6 +22,8 @@ namespace Chip8.Business
 
         public const long Diff60Hz = 10_000 * 17;
 
+        public const int ExecutionDelayTicks = 5000;
+
         private const int AvailableProgrammMemory = MemorySize - ProgrammOffset;
 
         private readonly IDisplayDriver displayDriver;
@@ -28,11 +32,13 @@ namespace Chip8.Business
 
         private readonly ILogger<Interpreter> logger;
 
-        private readonly Timer clock;
+        private readonly Timer timerClock;
 
         private int loadedProgrammSize = 0;
 
         private bool active = true;
+
+        private Stopwatch instructionExecutionStopwatch;
 
         public Interpreter(IDisplayDriver displayDriver, bool singleSteps = false, ILogger<Interpreter> logger = null)
         {
@@ -40,7 +46,8 @@ namespace Chip8.Business
             this.singleSteps = singleSteps;
             this.logger = logger;
 
-            this.clock = new Timer((state) => ((Interpreter)state).UpdateTimers(), this, 17, 17);
+            this.timerClock = new Timer((state) => ((Interpreter)state).UpdateTimers(), this, 17, 17);
+            this.instructionExecutionStopwatch = new Stopwatch();
         }
 
         ~Interpreter() 
@@ -70,10 +77,6 @@ namespace Chip8.Business
         public byte SoundTimer { get; set; } = 0;
 
         public byte DelayTimer { get; set; } = 0;
-
-        // 10.000 Ticks / Millisecond
-        // 60 hz = 60 times / second = 60 times / (1000 milliseconds)
-        public long LastTimerUpdate { get; set; } = DateTime.Now.Ticks;
 
         public string Status
             => $"V[{string.Join(",", this.V.Select(s => s.ToString("X2")))}] "
@@ -105,6 +108,8 @@ namespace Chip8.Business
         public void Start()
         {
             this.active = true;
+            this.instructionExecutionStopwatch.Start();
+
             do
             {
                 var instruction = this.CurrentInstruction;
@@ -113,7 +118,7 @@ namespace Chip8.Business
                 ////Console.WriteLine(this.Status + " " +instruction.ToString(this, this.ProgrammCounter));
                 ////Console.ReadLine();
 
-                var instructionText = instruction.ToHumanString(this, this.ProgrammCounter);
+                // var instructionText = instruction.ToHumanString(this, this.ProgrammCounter);
                 //// this.logger?.LogInformation(instructionText);
                 //// Native.NativeConsole.Write(this.Status, instructionText);
                 if (this.singleSteps)
@@ -121,9 +126,18 @@ namespace Chip8.Business
                     Console.ReadKey(true);
                 }
 
+                while (this.instructionExecutionStopwatch.ElapsedTicks < ExecutionDelayTicks) 
+                {
+                    // nop
+                }
+
+                this.instructionExecutionStopwatch.Restart();
+
                 instruction.Execute(this, this.ProgrammCounter);
             }
             while (this.active);
+
+            this.instructionExecutionStopwatch.Reset();
         }
 
         public void Draw()
@@ -150,7 +164,8 @@ namespace Chip8.Business
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            this.clock.Dispose();
+
+            this.timerClock.Dispose();
         }
 
         private void UpdateTimers()
