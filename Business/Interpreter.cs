@@ -64,8 +64,12 @@ namespace Chip8.Business
 
         public Dictionary<int, IInstruction> InstructionMap { get; } = new ();
 
+        // Chip-8 has 16 general purpose 8-bit registers, usually referred to as Vx, where x is a hexadecimal digit (0 through F). 
+        // General Purpose 8-bit registers (Vx, Vy, Vz, ...)
         public byte[] V { get; } = new byte[0x10];
 
+        // There is also a 16-bit register called I. 
+        // This register is generally used to store memory addresses, so only the lowest (rightmost) 12 bits are usually used.
         public int I { get; set; } = 0;
 
         public Random Random { get; } = new ();
