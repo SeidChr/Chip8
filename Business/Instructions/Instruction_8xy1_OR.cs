@@ -18,7 +18,7 @@ namespace Chip8.Business
         {
             int val = i.V[x];
             val |= i.V[y];
-            i.V[0xF] = val > 255 ? 1 : 0;
+            i.V[0xF] = this.GT(val, 255);
             i.V[x] = (byte)val;
             i.Step();
         }

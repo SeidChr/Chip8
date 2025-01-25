@@ -14,7 +14,7 @@ namespace Chip8.Business
         /// </summary>
         public override void Execute(Interpreter i, int pc, byte x, byte y, byte n, byte kk, ushort nnn)
         {
-            i.V[0xF] = (i.V[x] & 0b1000000) > 0 ? 1 : 0;
+            i.V[0xF] = this.GT(i.V[x] & 0b1000000, 0);
             i.V[x] <<= 1;
 
             i.Step();

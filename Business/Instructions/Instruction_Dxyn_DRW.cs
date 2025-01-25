@@ -52,7 +52,7 @@ namespace Chip8.Business.Instructions
 
             i.Draw();
 
-            i.V[0xF] = collision ? 1 : 0;
+            i.V[0xF] = (byte)(collision ? 1 : 0);
             if (collision) 
             {
                 // Console.ReadKey(true);

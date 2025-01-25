@@ -42,14 +42,17 @@ namespace Chip8.Business
 
         public virtual string CompilerReadable(int pc, byte x, byte y, byte n, byte kk, ushort nnn) => string.Empty;
 
+        protected byte GT(int a, int b)
+            => (byte)(a > b ? 1 : 0);
+
         private static (byte, byte, byte, byte, ushort) Extract(Interpreter i, int pc)
         {
-            // http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
-            // nnn or addr - A 12-bit value, the lowest 12 bits of the instruction
-            // n or nibble - A 4-bit value, the lowest 4 bits of the instruction
-            // x - A 4-bit value, the lower 4 bits of the high byte of the instruction
-            // y - A 4-bit value, the upper 4 bits of the low byte of the instruction
-            // kk or byte - An 8-bit value, the lowest 8 bits of the instruction
+            //// http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
+            //// nnn or addr - A 12-bit value, the lowest 12 bits of the instruction
+            //// n or nibble - A 4-bit value, the lowest 4 bits of the instruction
+            //// x - A 4-bit value, the lower 4 bits of the high byte of the instruction
+            //// y - A 4-bit value, the upper 4 bits of the low byte of the instruction
+            //// kk or byte - An 8-bit value, the lowest 8 bits of the instruction
         
             byte msb = i.Memory[pc];
             byte kk = i.Memory[pc + 1];

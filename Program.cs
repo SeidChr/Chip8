@@ -69,10 +69,10 @@ namespace Chip8
 
         private static async Task InterpetAsync(string[] args) 
         {
-            // var programmData = await File.ReadAllBytesAsync("Assets/Games/flightrunner.ch8");
+            //var programmData = await File.ReadAllBytesAsync("Assets/Games/flightrunner.ch8");
             // var programmData = await File.ReadAllBytesAsync("Assets/Games/Space Invaders [David Winter].ch8");
-            // var programmData = await File.ReadAllBytesAsync("Assets/Games/danm8ku.ch8");
-            var programmData = await File.ReadAllBytesAsync("Assets/Games/TETRIS.ch8");
+             var programmData = await File.ReadAllBytesAsync("Assets/Games/danm8ku.ch8");
+            // var programmData = await File.ReadAllBytesAsync("Assets/Games/TETRIS.ch8");
             // var programmData = await File.ReadAllBytesAsync("Assets/Games/BLITZ.ch8");
 
             var logger = LoggerFactory
@@ -82,6 +82,7 @@ namespace Chip8
                 .CreateLogger<Interpreter>();
 
             var displayDriver = new ConsoleHalfBlockNativeDisplay(3, 0);
+            // var displayDriver = new ConsoleHalfBlockDisplay();
             var interpreter = new Interpreter(
                 displayDriver,
                 singleSteps: false,
@@ -102,7 +103,10 @@ namespace Chip8
             interpreter.Load(programmData);
             interpreter.Start();
 
-            displayDriver.Dispose();
+            if (displayDriver is IDisposable disposableDisplayDriver)
+            {
+                disposableDisplayDriver.Dispose();
+            }
         }
     }
 }

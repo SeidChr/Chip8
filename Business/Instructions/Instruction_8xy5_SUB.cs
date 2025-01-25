@@ -16,7 +16,7 @@ namespace Chip8.Business
         {
             var vx = i.V[x];
             var vy = i.V[y];
-            i.V[0xF] = vx > vy ? 1 : 0;
+            i.V[0xF] = this.GT(vx, vy);
             i.V[x] -= vy;
             i.Step();
         }
